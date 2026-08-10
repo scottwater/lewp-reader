@@ -1,0 +1,6 @@
+refresh_feeds_hourly:
+  cron: "7 * * * *"
+  class: "RefreshAllFeedsJob"
+  queue: default
+  active_job: true
+  description: "Fan out refresh jobs for every subscribed RSS or Atom feed"

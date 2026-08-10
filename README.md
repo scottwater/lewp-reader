@@ -1,79 +1,66 @@
-# Inertia Rails React Starter Kit
+# Lewp Reader
 
-A modern full-stack starter application with Rails backend and React frontend using Inertia.js based on the [Laravel Starter Kit](https://github.com/laravel/react-starter-kit).
+A deliberately small, working RSS and Atom reader built to demonstrate Rails, Inertia.js, React, PostgreSQL, Redis, and Sidekiq in a Lewp-managed development workflow.
 
-## About this repo
+Lewp/Stooges/worktree orchestration is intentionally outside this repository. This app is the useful demo workload those tools can run later.
 
-This starter kit is generated output of [inertia-rails/generator](https://github.com/inertia-rails/generator):
-each generator release regenerates the app and opens an automated sync PR here, so most files in this repo
-are overwritten on every sync. **To contribute changes to the app itself, open a PR against the generator** —
-only this README and the deploy workflow are kit-owned.
+## What it does
 
-Prefer different options (framework, JavaScript instead of TypeScript, feature set)? Generate your own app:
+- Sign up, sign in, sign out, or enter the seeded demo in one click
+- Subscribe to RSS or Atom feed URLs
+- Read a combined timeline or one feed at a time
+- Mark an entry read when it is opened
+- Mark one feed—or the whole reader—as read
+- Refresh one feed on demand
+- Refresh every subscribed feed hourly through Sidekiq
+- Seed five starter feeds without making the test suite depend on the network
+
+## Requirements
+
+- Ruby and Node versions from `.ruby-version` and `.node-version`
+- PostgreSQL running on `localhost:5432`
+- Redis running on `localhost:6379`
+
+On macOS with Homebrew, make sure your installed PostgreSQL and Redis services are started before setup.
+
+## Run it
 
 ```sh
-rails new myapp -m https://raw.githubusercontent.com/inertia-rails/generator/dist/template.rb
+bin/setup
 ```
 
-## Features
+Setup installs dependencies, creates the PostgreSQL database, seeds the demo account and starter feeds, then starts Rails, Vite, and Sidekiq together. Open [http://localhost:3000](http://localhost:3000).
 
-- [Inertia Rails](https://inertia-rails.dev) & [Vite Rails](https://vite-ruby.netlify.app) setup
-- [React](https://react.dev) frontend with TypeScript & [shadcn/ui](https://ui.shadcn.com) component library
-- User authentication system (based on [Authentication Zero](https://github.com/lazaronixon/authentication-zero))
-- [Kamal](https://kamal-deploy.org/) for deployment
-- Optional SSR support
+To prepare without starting processes:
 
-See also:
-- [Svelte Starter Kit](https://github.com/inertia-rails/svelte-starter-kit) for Inertia Rails with Svelte
-- [Vue Starter Kit](https://github.com/inertia-rails/vue-starter-kit) for Inertia Rails with Vue
+```sh
+bin/setup --skip-server
+bin/dev
+```
 
-<a href="https://evilmartians.com/?utm_source=inertia-rails-react-starter-kit&utm_campaign=project_page">
-<img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg" alt="Built by Evil Martians" width="236" height="54">
-</a>
+The seeded demo is available from the home page. Its underlying credentials are `demo@lewpreader.test` / `lewp-reader-demo`, although the UI signs in without asking for them.
 
-## Setup
+## Useful commands
 
-1. Clone this repository
-2. Setup dependencies & run the server:
-   ```bash
-   bin/setup
-   ```
-3. Open http://localhost:3000
+```sh
+bin/rspec
+npm run check
+npm run lint
+npm run format
+bin/rubocop
+bin/rails db:seed
+```
 
-## Enabling SSR
+Feed refresh jobs use `REDIS_URL` when set and otherwise use Sidekiq's local Redis default. Production database configuration uses `DATABASE_URL`.
 
-This starter kit ships SSR-ready but turned off. The Puma plugin
-([`plugin :inertia_ssr`](config/puma.rb)) manages the Node.js renderer
-in-process — no separate accessory required.
+## Seed feeds
 
-To turn SSR on, flip two switches:
-
-1. Set `config.ssr_enabled = true` in [`config/initializers/inertia_rails.rb`](config/initializers/inertia_rails.rb).
-2. Build the image with `SSR_ENABLED=true` so the SSR bundle ships
-   alongside the app. Two ways:
-
-   **With Kamal** — add to [`config/deploy.yml`](config/deploy.yml):
-
-   ```yml
-   builder:
-     args:
-       SSR_ENABLED: true
-   ```
-
-   **By hand** — pass the build arg directly:
-
-   ```bash
-   docker build --build-arg SSR_ENABLED=true -t react_starter_kit .
-   ```
-
-That's it. Puma boots the SSR process automatically when
-`ssr_enabled` is true, and Inertia falls back to client-side
-rendering if it ever fails (see `config.on_ssr_error`).
-
-In development, flipping `ssr_enabled` is enough — Vite serves SSR
-via its own dev endpoint with HMR. The Docker build arg only matters
-for production images.
+- `https://andycroll.com/index.xml`
+- `https://seths.blog/feed/`
+- `https://island94.org/feed.xml`
+- `https://evilmartians.com/chronicles.atom`
+- `https://scottw.com/feed.xml`
 
 ## License
 
-The project is available as open source under the terms of the [MIT License](LICENSE).
+[MIT](LICENSE)

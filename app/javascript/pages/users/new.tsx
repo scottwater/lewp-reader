@@ -1,119 +1,96 @@
-import { Form, Head } from "@inertiajs/react"
+import { Form, Link } from "@inertiajs/react"
 
-import TextLink from "@/components/text-link"
-import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
-import AuthLayout from "@/layouts/auth-layout"
+import LewpAuthShell from "@/components/lewp-auth-shell"
+import LewpFieldError from "@/components/lewp-field-error"
+import LewpHead from "@/components/lewp-head"
 import { sessions, users } from "@/routes"
 
 export default function Register() {
   return (
-    <AuthLayout
-      title="Create an account"
-      description="Enter your details below to create your account"
-    >
-      <Head title="Register" />
-      <Form
-        action={users.create()}
-        resetOnSuccess={["password", "password_confirmation"]}
-        disableWhileProcessing
-        className="flex flex-col gap-6"
+    <>
+      <LewpHead title="Create your reader" />
+      <LewpAuthShell
+        title="Make a quiet place to read."
+        description="Your feeds, newest first, with no recommendations sneaking in."
       >
-        {({ processing, errors }) => (
-          <>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="name">Name</FieldLabel>
-                <Input
+        <Form
+          action={users.create()}
+          resetOnSuccess={["password", "password_confirmation"]}
+          disableWhileProcessing
+          className="auth-form"
+        >
+          {({ processing, errors }) => (
+            <>
+              <div className="form-field">
+                <label htmlFor="name">Name</label>
+                <input
                   id="name"
-                  type="text"
                   name="name"
+                  type="text"
                   required
                   autoFocus
-                  tabIndex={1}
                   autoComplete="name"
                   disabled={processing}
-                  placeholder="Full name"
+                  placeholder="Your name"
                 />
-                <FieldError
-                  errors={errors.name?.map((message) => ({ message }))}
-                />
-              </Field>
+                <LewpFieldError messages={errors.name} />
+              </div>
 
-              <Field>
-                <FieldLabel htmlFor="email">Email address</FieldLabel>
-                <Input
+              <div className="form-field">
+                <label htmlFor="email">Email address</label>
+                <input
                   id="email"
-                  type="email"
                   name="email"
+                  type="email"
                   required
-                  tabIndex={2}
                   autoComplete="email"
-                  placeholder="email@example.com"
+                  disabled={processing}
+                  placeholder="you@example.com"
                 />
-                <FieldError
-                  errors={errors.email?.map((message) => ({ message }))}
-                />
-              </Field>
+                <LewpFieldError messages={errors.email} />
+              </div>
 
-              <Field>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input
+              <div className="form-field">
+                <label htmlFor="password">Password</label>
+                <input
                   id="password"
-                  type="password"
                   name="password"
-                  required
-                  tabIndex={3}
-                  autoComplete="new-password"
-                  placeholder="Password"
-                />
-                <FieldError
-                  errors={errors.password?.map((message) => ({ message }))}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="password_confirmation">
-                  Confirm password
-                </FieldLabel>
-                <Input
-                  id="password_confirmation"
                   type="password"
-                  name="password_confirmation"
                   required
-                  tabIndex={4}
+                  minLength={12}
                   autoComplete="new-password"
-                  placeholder="Confirm password"
+                  disabled={processing}
+                  placeholder="At least 12 characters"
                 />
-                <FieldError
-                  errors={errors.password_confirmation?.map((message) => ({
-                    message,
-                  }))}
+                <LewpFieldError messages={errors.password} />
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="password_confirmation">Confirm password</label>
+                <input
+                  id="password_confirmation"
+                  name="password_confirmation"
+                  type="password"
+                  required
+                  minLength={12}
+                  autoComplete="new-password"
+                  disabled={processing}
+                  placeholder="Type it once more"
                 />
-              </Field>
+                <LewpFieldError messages={errors.password_confirmation} />
+              </div>
 
-              <Button type="submit" className="mt-2 w-full" tabIndex={5}>
-                {processing && <Spinner />}
-                Create account
-              </Button>
-            </FieldGroup>
+              <button className="paper-button auth-submit" type="submit">
+                {processing ? "Making your reader…" : "Create my reader"}
+              </button>
+            </>
+          )}
+        </Form>
 
-            <div className="text-muted-foreground text-center text-sm">
-              Already have an account?{" "}
-              <TextLink href={sessions.new()} tabIndex={6}>
-                Log in
-              </TextLink>
-            </div>
-          </>
-        )}
-      </Form>
-    </AuthLayout>
+        <p className="auth-switch">
+          Already have a reader? <Link href={sessions.new()}>Log in</Link>
+        </p>
+      </LewpAuthShell>
+    </>
   )
 }

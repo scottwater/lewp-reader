@@ -5,5 +5,6 @@ class HomeController < InertiaController
   before_action :perform_authentication
 
   def index
+    render inertia: { demo_available: User.exists?(email: DemoSessionsController::DEMO_EMAIL) }
   end
 end

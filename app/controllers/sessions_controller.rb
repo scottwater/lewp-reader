@@ -11,7 +11,7 @@ class SessionsController < InertiaController
   def create
     if user = User.authenticate_by(email: params[:email], password: params[:password])
       @session = user.sessions.create!
-      cookies.signed.permanent[:session_token] = { value: @session.id, httponly: true }
+      cookies.signed.permanent[:session_token] = { value: @session.id, httponly: true, same_site: :lax }
 
       redirect_to dashboard_path, notice: "Signed in successfully"
     else
@@ -20,9 +20,15 @@ class SessionsController < InertiaController
   end
 
   def destroy
+    signing_out = @session == Current.session
     @session.destroy!
-    Current.session = nil
-    redirect_to settings_sessions_path, notice: "That session has been logged out", inertia: { clear_history: true }
+    if signing_out
+      Current.session = nil
+      cookies.delete(:session_token)
+      redirect_to root_path, notice: "Signed out successfully", inertia: { clear_history: true }
+    else
+      redirect_to settings_sessions_path, notice: "That session has been logged out"
+    end
   end
 
   private

@@ -1,95 +1,69 @@
-import { Form, Head } from "@inertiajs/react"
+import { Form, Link } from "@inertiajs/react"
 
-import TextLink from "@/components/text-link"
-import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
-import AuthLayout from "@/layouts/auth-layout"
+import LewpAuthShell from "@/components/lewp-auth-shell"
+import LewpFieldError from "@/components/lewp-field-error"
+import LewpHead from "@/components/lewp-head"
 import { identityPasswordResets, sessions, users } from "@/routes"
 
 export default function Login() {
   return (
-    <AuthLayout
-      title="Log in to your account"
-      description="Enter your email and password below to log in"
-    >
-      <Head title="Log in" />
-      <Form
-        action={sessions.create()}
-        resetOnSuccess={["password"]}
-        className="flex flex-col gap-6"
+    <>
+      <LewpHead title="Log in" />
+      <LewpAuthShell
+        title="Welcome back."
+        description="Your feeds have been keeping your place."
       >
-        {({ processing, errors }) => (
-          <>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Email address</FieldLabel>
-                <Input
+        <Form
+          action={sessions.create()}
+          resetOnSuccess={["password"]}
+          disableWhileProcessing
+          className="auth-form"
+        >
+          {({ processing, errors }) => (
+            <>
+              <div className="form-field">
+                <label htmlFor="email">Email address</label>
+                <input
                   id="email"
                   name="email"
                   type="email"
                   required
                   autoFocus
-                  tabIndex={1}
                   autoComplete="email"
-                  placeholder="email@example.com"
+                  disabled={processing}
+                  placeholder="you@example.com"
                 />
-                <FieldError
-                  errors={errors.email?.map((message) => ({ message }))}
-                />
-              </Field>
+                <LewpFieldError messages={errors.email} />
+              </div>
 
-              <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <TextLink
-                    href={identityPasswordResets.new()}
-                    className="ml-auto text-sm"
-                    tabIndex={5}
-                  >
-                    Forgot password?
-                  </TextLink>
+              <div className="form-field">
+                <div className="field-label-row">
+                  <label htmlFor="password">Password</label>
+                  <Link href={identityPasswordResets.new()}>Forgot it?</Link>
                 </div>
-                <Input
+                <input
                   id="password"
-                  type="password"
                   name="password"
+                  type="password"
                   required
-                  tabIndex={2}
                   autoComplete="current-password"
-                  placeholder="Password"
+                  disabled={processing}
+                  placeholder="Your password"
                 />
-                <FieldError
-                  errors={errors.password?.map((message) => ({ message }))}
-                />
-              </Field>
+                <LewpFieldError messages={errors.password} />
+              </div>
 
-              <Button
-                type="submit"
-                className="mt-4 w-full"
-                tabIndex={4}
-                disabled={processing}
-              >
-                {processing && <Spinner />}
-                Log in
-              </Button>
-            </FieldGroup>
+              <button className="paper-button auth-submit" type="submit">
+                {processing ? "Opening your reader…" : "Log in"}
+              </button>
+            </>
+          )}
+        </Form>
 
-            <div className="text-muted-foreground text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <TextLink href={users.new()} tabIndex={5}>
-                Sign up
-              </TextLink>
-            </div>
-          </>
-        )}
-      </Form>
-    </AuthLayout>
+        <p className="auth-switch">
+          New to Lewp Reader? <Link href={users.new()}>Create an account</Link>
+        </p>
+      </LewpAuthShell>
+    </>
   )
 }

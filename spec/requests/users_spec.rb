@@ -19,7 +19,9 @@ RSpec.describe "Users", type: :request do
   end
 
   describe "POST /sign_up" do
-    it "creates a new user" do
+    it "creates a new user with the starter feeds" do
+      starter_feed = Feed.create!(url: "https://starter.example/feed.xml", starter: true)
+
       expect {
         post sign_up_path, params: {
           name: "New User",
@@ -29,6 +31,7 @@ RSpec.describe "Users", type: :request do
         }
       }.to change(User, :count).by(1)
       expect(response).to redirect_to(dashboard_path)
+      expect(User.find_by!(email: "new@example.com").feeds).to contain_exactly(starter_feed)
     end
 
     it "rejects invalid user" do

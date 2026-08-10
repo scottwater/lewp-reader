@@ -1,0 +1,487 @@
+/* Marketing */
+.marketing-page {
+  min-height: 100vh;
+}
+
+.marketing-container {
+  width: min(100% - 48px, 960px);
+  margin-inline: auto;
+}
+
+.marketing-header {
+  display: flex;
+  min-height: 84px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--lewp-line);
+}
+
+.marketing-nav,
+.marketing-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.marketing-nav {
+  font-family: var(--lewp-mono);
+  font-size: 13px;
+}
+
+.text-link {
+  color: var(--lewp-ink);
+}
+
+.marketing-hero {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 68px 0 92px;
+  text-align: center;
+}
+
+.marketing-hero-logo {
+  width: 224px;
+  height: 112px;
+  margin-bottom: 30px;
+  color: var(--lewp-teal);
+  overflow: visible;
+}
+
+.marketing-kicker,
+.pane-label,
+.auth-kicker {
+  margin: 0;
+  color: var(--lewp-teal-text);
+  font-family: var(--lewp-mono);
+  font-size: 12px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.marketing-hero h1 {
+  max-width: 720px;
+  margin: 14px auto 20px;
+  font-size: clamp(40px, 6vw, 58px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.marketing-lede {
+  max-width: 590px;
+  margin: 0 auto 30px;
+  color: var(--lewp-soft);
+  font-size: 18px;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.marketing-demo {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 72px;
+  padding: 76px 0;
+  border-top: 1px solid var(--lewp-line);
+}
+
+.marketing-demo-copy h2,
+.marketing-signup h2 {
+  margin: 0 0 16px;
+  font-size: 33px;
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.marketing-demo-copy p,
+.marketing-signup > p:not(.marketing-kicker) {
+  margin: 0;
+  color: var(--lewp-soft);
+  font-size: 17px;
+  text-wrap: pretty;
+}
+
+.terminal-object {
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--lewp-terminal);
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 4%),
+    0 10px 30px -12px rgb(22 33 31 / 35%);
+  color: var(--lewp-terminal-ink);
+  font-family: var(--lewp-mono);
+  font-size: 13px;
+}
+
+.terminal-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  color: rgb(255 255 255 / 55%);
+  font-size: 11px;
+}
+
+.terminal-lights {
+  display: flex;
+  gap: 7px;
+}
+
+.terminal-lights i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5c5751;
+}
+
+.terminal-body {
+  padding: 20px 22px 24px;
+  line-height: 1.9;
+}
+
+.terminal-body p {
+  margin: 0;
+}
+
+.terminal-prompt {
+  margin-right: 10px;
+  color: var(--lewp-teal);
+}
+
+.terminal-muted {
+  color: var(--lewp-terminal-dim);
+}
+
+.terminal-success {
+  color: var(--lewp-green);
+}
+
+.marketing-features {
+  border-top: 1px solid var(--lewp-line);
+}
+
+.marketing-features article {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 24px;
+  padding: 30px 0;
+  border-bottom: 1px solid var(--lewp-line-soft);
+}
+
+.feature-number {
+  color: var(--lewp-teal-text);
+  font-family: var(--lewp-mono);
+  font-size: 12px;
+}
+
+.marketing-features h2 {
+  margin: 0 0 5px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.marketing-features p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--lewp-faded);
+  font-size: 15px;
+}
+
+.marketing-signup {
+  margin: 88px 0 64px;
+  padding: 48px;
+  border: 1px solid var(--lewp-line);
+  border-radius: 12px;
+  background: var(--lewp-raised);
+}
+
+.marketing-signup .marketing-kicker {
+  margin-bottom: 14px;
+}
+
+.marketing-signup .marketing-actions {
+  margin-top: 28px;
+}
+
+.marketing-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 34px 0 46px;
+  border-top: 1px solid var(--lewp-line);
+  color: var(--lewp-faded);
+  font-family: var(--lewp-mono);
+  font-size: 11px;
+}
+
+.footer-loop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-loop svg {
+  width: 26px;
+  height: 14px;
+  color: var(--lewp-teal);
+}
+
+@keyframes lewp-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes lewp-pop {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes lewp-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lewp-logo-path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: lewp-draw 1.7s cubic-bezier(0.65, 0.05, 0.36, 1) 300ms forwards;
+}
+
+.lewp-logo-dot {
+  animation: lewp-pop 450ms ease-out both;
+  transform-origin: center;
+}
+
+.lewp-logo-tip {
+  opacity: 0;
+  animation: lewp-pop 400ms ease-out 1.9s forwards;
+  transform-origin: center;
+}
+
+.lewp-reveal,
+.lewp-reveal-delayed {
+  opacity: 0;
+  animation: lewp-reveal 700ms ease-out forwards;
+}
+
+.lewp-reveal-delayed {
+  animation-delay: 150ms;
+}
+
+/* Auth */
+.auth-page {
+  min-height: 100svh;
+  padding: 0 28px 72px;
+}
+
+.auth-header {
+  display: flex;
+  width: min(100%, 920px);
+  min-height: 84px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--lewp-line);
+}
+
+.auth-panel {
+  width: min(100%, 440px);
+  margin: 84px auto 0;
+}
+
+.auth-intro {
+  margin-bottom: 34px;
+}
+
+.auth-intro h1 {
+  margin: 13px 0 10px;
+  font-size: 35px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.auth-intro > p:last-child {
+  max-width: 400px;
+  margin: 0;
+  color: var(--lewp-soft);
+  font-size: 16px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 28px;
+  border: 1px solid var(--lewp-line);
+  border-radius: 12px;
+  background: var(--lewp-raised);
+}
+
+.form-field label,
+.add-feed-form label {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--lewp-faded);
+  font-family: var(--lewp-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.form-field input,
+.add-feed-form input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--lewp-line);
+  border-radius: 6px;
+  background: var(--lewp-paper);
+  color: var(--lewp-ink);
+  font-size: 15px;
+  padding: 9px 11px;
+  box-shadow: none;
+}
+
+.form-field input::placeholder,
+.add-feed-form input::placeholder {
+  color: var(--lewp-faint);
+}
+
+.form-field input:focus,
+.add-feed-form input:focus {
+  border-color: var(--lewp-teal-text);
+  outline: 2px solid rgb(14 140 140 / 15%);
+  outline-offset: 0;
+}
+
+.field-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.field-label-row a {
+  font-family: var(--lewp-mono);
+  font-size: 11px;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.auth-switch {
+  margin: 22px 0 0;
+  color: var(--lewp-faded);
+  font-size: 14px;
+  text-align: center;
+}
+
+@media (max-width: 760px) {
+  .marketing-container {
+    width: min(100% - 36px, 960px);
+  }
+
+  .marketing-header {
+    min-height: 72px;
+  }
+
+  .marketing-nav {
+    gap: 12px;
+  }
+
+  .marketing-hero {
+    padding: 48px 0 68px;
+  }
+
+  .marketing-hero-logo {
+    width: 190px;
+    height: 95px;
+    margin-bottom: 24px;
+  }
+
+  .marketing-hero h1 {
+    font-size: 40px;
+  }
+
+  .marketing-lede {
+    font-size: 16px;
+  }
+
+  .marketing-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .marketing-demo {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 60px 0;
+  }
+
+  .marketing-signup {
+    margin-top: 64px;
+    padding: 30px 24px;
+  }
+
+  .marketing-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .auth-page {
+    padding-inline: 18px;
+  }
+
+  .auth-header {
+    min-height: 72px;
+  }
+
+  .auth-panel {
+    margin-top: 52px;
+  }
+
+  .auth-form {
+    padding: 22px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lewp-logo-path,
+  .lewp-logo-dot,
+  .lewp-logo-tip,
+  .lewp-reveal,
+  .lewp-reveal-delayed {
+    opacity: 1;
+    animation: none;
+    stroke-dashoffset: 0;
+    transform: none;
+  }
+
+  .paper-button {
+    transition: none;
+  }
+}

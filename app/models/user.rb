@@ -12,10 +12,13 @@ class User < ApplicationRecord
   end
 
   has_many :sessions, dependent: :destroy
+  has_many :subscriptions, dependent: :destroy
+  has_many :feeds, through: :subscriptions
+  has_many :entry_reads, dependent: :destroy
 
   validates :name, presence: true
   validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :password, allow_nil: true, length: { minimum: 12 }
+  validates :password, allow_nil: true, length: { minimum: 8 }
 
   normalizes :email, with: -> { _1.strip.downcase }
 
@@ -25,5 +28,15 @@ class User < ApplicationRecord
 
   after_update if: :password_digest_previously_changed? do
     sessions.where.not(id: Current.session).delete_all
+  end
+
+  after_create :subscribe_to_starter_feeds
+
+  private
+
+  def subscribe_to_starter_feeds
+    Feed.where(starter: true).find_each do |feed|
+      subscriptions.find_or_create_by!(feed: feed)
+    end
   end
 end

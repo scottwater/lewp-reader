@@ -1,9 +1,8 @@
 import { createInertiaApp } from "@inertiajs/react"
 
-import { initializeTheme } from "@/hooks/use-appearance"
 import PersistentLayout from "@/layouts/persistent-layout"
 
-const appName = import.meta.env.VITE_APP_NAME ?? "React Starter Kit"
+const appName = import.meta.env.VITE_APP_NAME ?? "Lewp Reader"
 
 void createInertiaApp({
   title: (title) => (title ? `${title} - ${appName}` : appName),
@@ -20,7 +19,7 @@ void createInertiaApp({
     }),
   },
   progress: {
-    color: "#4B5563",
+    color: "#0A6E6E",
   },
 }).catch((error) => {
   // This ensures this entrypoint is only loaded on Inertia pages
@@ -36,6 +35,3 @@ void createInertiaApp({
     )
   }
 })
-
-// This will set light / dark mode on load...
-initializeTheme()

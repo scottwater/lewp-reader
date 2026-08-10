@@ -6,6 +6,7 @@ require_relative "../config/environment"
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 
 require "rspec/rails"
+require "inertia_rails/rspec"
 require "capybara/rspec"
 require "selenium-webdriver"
 
@@ -28,4 +29,14 @@ RSpec.configure do |config|
   end
 
   config.include ActiveSupport::Testing::TimeHelpers
+  config.include ActiveJob::TestHelper
+
+  config.before(:suite) do
+    EntryRead.delete_all
+    Subscription.delete_all
+    Entry.delete_all
+    Session.delete_all
+    Feed.delete_all
+    User.delete_all
+  end
 end

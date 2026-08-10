@@ -1,0 +1,228 @@
+:root {
+  --lewp-paper: #f7f4ee;
+  --lewp-raised: #fbf9f3;
+  --lewp-ink: #1a1a1a;
+  --lewp-soft: #4a4a46;
+  --lewp-faded: #6a675f;
+  --lewp-faint: #9a9891;
+  --lewp-faint-2: #c7c2b6;
+  --lewp-line: #e4e0d6;
+  --lewp-line-soft: #e9e5db;
+  --lewp-chip: #ece8de;
+  --lewp-teal: #0e8c8c;
+  --lewp-teal-text: #0a6e6e;
+  --lewp-terminal: #16211f;
+  --lewp-terminal-ink: #edebe4;
+  --lewp-terminal-dim: #9a968d;
+  --lewp-terminal-comment: #908b81;
+  --lewp-green: #5fb98c;
+  --lewp-red: #b4433a;
+  --lewp-sans: "Geist", system-ui, sans-serif;
+  --lewp-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --background: var(--lewp-paper);
+  --foreground: var(--lewp-ink);
+  --card: var(--lewp-raised);
+  --card-foreground: var(--lewp-ink);
+  --popover: var(--lewp-raised);
+  --popover-foreground: var(--lewp-ink);
+  --primary: var(--lewp-terminal);
+  --primary-foreground: var(--lewp-terminal-ink);
+  --secondary: var(--lewp-chip);
+  --secondary-foreground: var(--lewp-ink);
+  --muted: var(--lewp-chip);
+  --muted-foreground: var(--lewp-faded);
+  --accent: var(--lewp-chip);
+  --accent-foreground: var(--lewp-ink);
+  --destructive: var(--lewp-red);
+  --destructive-foreground: #fff;
+  --border: var(--lewp-line);
+  --input: var(--lewp-line);
+  --ring: var(--lewp-teal-text);
+  --radius: 0.625rem;
+  --sidebar: var(--lewp-raised);
+  --sidebar-foreground: var(--lewp-ink);
+  --sidebar-primary: var(--lewp-teal-text);
+  --sidebar-primary-foreground: #fff;
+  --sidebar-accent: var(--lewp-chip);
+  --sidebar-accent-foreground: var(--lewp-ink);
+  --sidebar-border: var(--lewp-line);
+  --sidebar-ring: var(--lewp-teal-text);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    background: var(--lewp-paper);
+    color-scheme: light;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--lewp-paper);
+    color: var(--lewp-ink);
+    font-family: var(--lewp-sans);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button,
+  input {
+    font: inherit;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a {
+    color: var(--lewp-teal-text);
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: rgb(14 140 140 / 20%);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--lewp-teal-text);
+    outline-offset: 3px;
+  }
+}
+
+/* Shared Lewp controls */
+.lewp-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--lewp-teal-text);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.lewp-brand:hover {
+  text-decoration: none;
+}
+
+.lewp-brand-mark {
+  width: 30px;
+  height: 16px;
+  color: var(--lewp-teal);
+  overflow: visible;
+}
+
+.lewp-brand-suffix {
+  margin-left: -5px;
+  color: var(--lewp-faded);
+  font-family: var(--lewp-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.paper-button,
+.quiet-button,
+.mono-link {
+  cursor: pointer;
+}
+
+.paper-button {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  border: 1px solid var(--lewp-faint-2);
+  border-radius: 7px;
+  background: var(--lewp-raised);
+  color: var(--lewp-ink);
+  font-family: var(--lewp-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 10px 15px;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.paper-button:hover {
+  border-color: var(--lewp-teal-text);
+  background: #fffdf8;
+  text-decoration: none;
+}
+
+.paper-button-small {
+  min-height: 36px;
+  padding: 6px 12px;
+}
+
+.quiet-button,
+.mono-link {
+  border: 0;
+  background: transparent;
+  color: var(--lewp-teal-text);
+  font-family: var(--lewp-mono);
+  font-size: 12px;
+  padding: 0;
+}
+
+.quiet-button:hover,
+.mono-link:hover,
+.text-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.55;
+}
+
+.field-error {
+  margin: 6px 0 0;
+  color: #8b352f;
+  font-size: 13px;
+  line-height: 1.4;
+}

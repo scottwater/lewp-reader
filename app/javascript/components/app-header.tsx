@@ -40,7 +40,7 @@ import AppLogoIcon from "./app-logo-icon"
 
 const mainNavItems: NavItem[] = [
   {
-    title: "Dashboard",
+    title: "Reader",
     href: dashboard.index().url,
     icon: LayoutGrid,
   },
@@ -48,8 +48,8 @@ const mainNavItems: NavItem[] = [
 
 const rightNavItems: NavItem[] = [
   {
-    title: "Repository",
-    href: "https://github.com/inertia-rails/react-starter-kit",
+    title: "Lewp repository",
+    href: "https://github.com/scottwater/lewp",
     icon: Folder,
   },
   {

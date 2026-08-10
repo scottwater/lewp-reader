@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title> Example Atom </title>
+  <subtitle> A small Atom fixture. </subtitle>
+  <link href="https://atom.example/" rel="alternate" type="text/html" />
+  <link href="https://atom.example/feed.xml" rel="self" type="application/atom+xml" />
+  <updated>2023-08-04T12:00:00Z</updated>
+  <id>tag:atom.example,2023:feed</id>
+  <entry>
+    <title type="html">Atom &amp; entry</title>
+    <link href="https://atom.example/posts/one" rel="alternate" type="text/html" />
+    <id>tag:atom.example,2023:one</id>
+    <author><name>Grace Hopper</name></author>
+    <summary type="html">An &lt;em&gt;Atom&lt;/em&gt; summary.</summary>
+    <content type="html">The &lt;strong&gt;full&lt;/strong&gt; Atom body.</content>
+    <published>2023-08-03T10:30:00Z</published>
+    <updated>2023-08-04T12:00:00Z</updated>
+  </entry>
+</feed>

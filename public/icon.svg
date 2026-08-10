@@ -1,3 +1,6 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Lewp Reader">
+  <title>Lewp Reader</title>
+  <path d="M28.48 49.72 C54 46.2 56.2 13.2 32 13.2 C7.8 13.2 5.6 46.2 35.52 49.72"
+        fill="none" stroke="#0E8C8C" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="32" cy="51" r="5.5" fill="#0E8C8C"/>
 </svg>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title> Example RSS </title>
+    <link>https://example.com/blog</link>
+    <description> A small RSS fixture. </description>
+    <item>
+      <title> First RSS entry </title>
+      <link>https://example.com/blog/first</link>
+      <guid isPermaLink="false">rss-entry-1</guid>
+      <dc:creator> Ada Lovelace </dc:creator>
+      <description><![CDATA[ <p>Short RSS summary.</p> ]]></description>
+      <content:encoded><![CDATA[
+        <article>Full <strong>RSS</strong> body.</article>
+      ]]></content:encoded>
+      <pubDate>Tue, 01 Aug 2023 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>URL identified entry</title>
+      <link>https://example.com/blog/by-url</link>
+      <description>Uses its URL as the stable ID.</description>
+      <pubDate>Mon, 31 Jul 2023 12:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Content identified entry</title>
+      <description>Has no GUID or URL.</description>
+      <pubDate>Sun, 30 Jul 2023 12:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>
