@@ -6,7 +6,9 @@ import rails from "rails-vite-plugin"
 import { defineConfig, loadEnv } from "vite"
 
 export default defineConfig(({ command, mode }) => {
-  const configuredPort = loadEnv(mode, ".", "").VITE_PORT
+  const environment = loadEnv(mode, ".", "")
+  const configuredPort = environment.VITE_PORT
+  const appHost = environment.APP_HOST
   if (configuredPort && !/^\d+$/.test(configuredPort)) {
     throw new Error("VITE_PORT must be a numeric TCP port")
   }
@@ -17,8 +19,10 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     server: {
+      host: "127.0.0.1",
       port: vitePort,
       strictPort: true,
+      cors: appHost ? { origin: `https://${appHost}` } : undefined,
     },
     ssr: {
       // Prebuild ssr.js so we can drop node_modules from the container.
