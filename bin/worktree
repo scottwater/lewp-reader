@@ -1,0 +1,136 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
+# shellcheck source=../script/workspace-common.sh
+source "$SCRIPT_ROOT/script/workspace-common.sh"
+
+usage() {
+  cat <<'USAGE'
+Usage: bin/worktree <workspace-name> [start-point]
+
+Create or exactly resume a linked checkout, copy approved local files without
+overwriting, install locked dependencies, and provision its isolated runtime.
+Set WORKTREE_ROOT to override the default .worktrees directory.
+USAGE
+}
+
+[ "$#" -ge 1 ] && [ "$#" -le 2 ] || { usage >&2; exit 2; }
+workspace="$1"
+start_point="${2:-}"
+# Name validation deliberately precedes every Git or infrastructure command.
+validate_workspace_name "$workspace"
+
+command_exists git || fail "git is required"
+primary="$(primary_checkout)"
+source_checkout="$(checkout_root)"
+source_head="$(git -C "$source_checkout" rev-parse HEAD)"
+
+root="${WORKTREE_ROOT:-.worktrees}"
+case "$root" in
+  /*) ;;
+  *) root="$primary/$root" ;;
+esac
+mkdir -p "$root"
+root="$(physical_dir "$root")"
+destination="$root/$workspace"
+
+case "$destination/" in
+  "$primary/"*)
+    git -C "$primary" check-ignore -q "$destination" || fail "worktree destination inside the repository must be ignored by Git: $destination"
+    ;;
+esac
+
+registered_branch_for_path() {
+  local wanted="$1"
+  git -C "$primary" worktree list --porcelain | awk -v wanted="$wanted" '
+    /^worktree / { path=substr($0,10); branch="" }
+    /^branch / { branch=substr($0,8) }
+    /^$/ { if (path == wanted) { print branch; printed=1; exit } }
+    END { if (!printed && path == wanted) print branch }
+  '
+}
+
+registered_path_for_branch() {
+  local wanted="refs/heads/$1"
+  git -C "$primary" worktree list --porcelain | awk -v wanted="$wanted" '
+    /^worktree / { path=substr($0,10) }
+    /^branch / { if (substr($0,8) == wanted) { print path; exit } }
+  '
+}
+
+branch_exists=false
+git -C "$primary" show-ref --verify --quiet "refs/heads/$workspace" && branch_exists=true
+registered_branch="$(registered_branch_for_path "$destination")"
+
+if [ -n "$registered_branch" ]; then
+  [ "$registered_branch" = "refs/heads/$workspace" ] || fail "destination is registered to $registered_branch, not refs/heads/$workspace"
+  [ -z "$start_point" ] || fail "a start point cannot be supplied when resuming an existing branch"
+  [ -d "$destination" ] || fail "registered worktree path is missing: $destination"
+  printf 'Resuming exact worktree match at %s\n' "$destination"
+else
+  [ ! -e "$destination" ] || fail "destination exists but is not the exact registered worktree: $destination"
+  active_path="$(registered_path_for_branch "$workspace")"
+  [ -z "$active_path" ] || fail "branch '$workspace' is already checked out at $active_path"
+
+  if [ "$branch_exists" = true ]; then
+    [ -z "$start_point" ] || fail "a start point cannot be supplied for existing branch '$workspace'"
+  fi
+
+  if [ -n "$(git -C "$source_checkout" status --porcelain)" ]; then
+    printf 'Warning: source checkout has uncommitted changes; the new worktree starts from committed history.\n' >&2
+  fi
+
+  if [ "$branch_exists" = true ]; then
+    git -C "$primary" worktree add "$destination" "$workspace"
+  else
+    start_commit="$source_head"
+    if [ -n "$start_point" ]; then
+      start_commit="$(git -C "$source_checkout" rev-parse --verify "${start_point}^{commit}")" || fail "invalid Git start point: $start_point"
+    fi
+    git -C "$primary" worktree add -b "$workspace" "$destination" "$start_commit"
+  fi
+fi
+
+copy_if_missing() {
+  local relative="$1"
+  local src="$source_checkout/$relative"
+  local dest="$destination/$relative"
+  [ -f "$src" ] || return 0
+  [ ! -e "$dest" ] || return 0
+  mkdir -p "$(dirname "$dest")"
+  cp "$src" "$dest"
+}
+
+copy_if_missing .bundle/config
+copy_if_missing config/master.key
+shopt -s nullglob
+for src in "$source_checkout"/config/credentials/*.key; do
+  relative="${src#"$source_checkout/"}"
+  copy_if_missing "$relative"
+done
+shopt -u nullglob
+
+if [ -f "$source_checkout/.env.development" ] && [ ! -e "$destination/.env.development" ]; then
+  awk '
+    /^[[:space:]]*(export[[:space:]]+)?(PORT|VITE_PORT|APP_HOST|DATABASE_URL|PG[A-Z0-9_]*|REDIS_URL|COMPOSE_PROJECT_NAME|POSTGRES_PORT|REDIS_PORT|LEWP_READER_CHECKOUT_PATH)[[:space:]]*=/ { next }
+    { print }
+  ' "$source_checkout/.env.development" > "$destination/.env.development"
+fi
+
+if (cd "$destination" && bin/workspace-setup); then
+  :
+else
+  status=$?
+  printf '\nProvisioning did not complete. The branch, checkout, and partial runtime were retained.\n' >&2
+  printf 'Resume:   cd %q && bin/workspace-setup\n' "$destination" >&2
+  printf 'Teardown: cd %q && bin/workspace-teardown\n' "$destination" >&2
+  printf 'Remove:   git -C %q worktree remove %q\n' "$primary" "$destination" >&2
+  exit "$status"
+fi
+
+printf '\nWorktree ready:\n'
+printf '  Checkout: %s\n' "$destination"
+printf '  URL: https://%s.reader.lewp\n' "$workspace"
+printf '  Next: cd %q && bin/dev\n' "$destination"

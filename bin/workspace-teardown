@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+APP_ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
+cd "$APP_ROOT"
+# shellcheck source=../script/workspace-common.sh
+source "$APP_ROOT/script/workspace-common.sh"
+
+if [ "$#" -gt 0 ]; then
+  case "${1:-}" in
+    -h|--help)
+      cat <<'USAGE'
+Usage: bin/workspace-teardown
+
+Delete this workspace's Compose containers and volumes, release its Lewp
+allocations, and close only its recorded Herdr workspace. The Git checkout is
+left in place and must be removed separately.
+USAGE
+      exit 0
+      ;;
+    *) fail "workspace-teardown accepts no options"; exit 2 ;;
+  esac
+fi
+
+checkout="$(physical_dir "$APP_ROOT")"
+primary="$(primary_checkout)"
+has_lewp=false
+postgres_port=1
+redis_port=1
+
+if [ "$checkout" = "$primary" ]; then
+  expected_mode=main
+  expected_workspace=main
+else
+  expected_mode=linked
+  expected_workspace="$(basename "$checkout")"
+  validate_workspace_name "$expected_workspace"
+fi
+
+command_exists jq || fail "required workspace tool is missing: jq"
+if [ -e "$WORKSPACE_IDENTITY_FILE" ]; then
+  validate_recorded_identity "$WORKSPACE_IDENTITY_FILE" "$expected_workspace" "$expected_mode" "$checkout"
+  mode="$expected_mode"
+  workspace="$expected_workspace"
+  compose_project="$(identity_value "$WORKSPACE_IDENTITY_FILE" compose_project)"
+  app_host="$(identity_value "$WORKSPACE_IDENTITY_FILE" app_host)"
+  recorded_postgres_port="$(identity_value "$WORKSPACE_IDENTITY_FILE" postgres_port)" || fail "generated identity has no PostgreSQL port field"
+  recorded_redis_port="$(identity_value "$WORKSPACE_IDENTITY_FILE" redis_port)" || fail "generated identity has no Redis port field"
+  [[ "$recorded_postgres_port" =~ ^[0-9]+$ ]] && postgres_port="$recorded_postgres_port"
+  [[ "$recorded_redis_port" =~ ^[0-9]+$ ]] && redis_port="$recorded_redis_port"
+
+  if [ -e "$WORKSPACE_LEWP_FILE" ] || [ -L "$WORKSPACE_LEWP_FILE" ]; then
+    [ -f "$WORKSPACE_LEWP_FILE" ] && [ ! -L "$WORKSPACE_LEWP_FILE" ] || fail "Lewp identity must be a regular, non-symlink file"
+    recorded_host="$(awk -F '"' '/^[[:space:]]*host[[:space:]]*=/ { print $2; exit }' "$WORKSPACE_LEWP_FILE")"
+    [ "$recorded_host" = "$app_host" ] || fail "Lewp identity host '${recorded_host:-missing}' does not match $app_host"
+    has_lewp=true
+  elif [ "$mode" = main ]; then
+    fail "the primary checkout has incomplete generated identity; refusing teardown without $WORKSPACE_LEWP_FILE"
+  else
+    printf 'Warning: Lewp identity is missing; Compose cleanup will continue but route release will be skipped.\n' >&2
+  fi
+else
+  [ "$expected_mode" != main ] || fail "the primary checkout has no generated main identity; refusing to infer destructive targets"
+  mode=linked
+  workspace="$expected_workspace"
+  compose_project="lewp-reader-$workspace"
+  app_host="$workspace.reader.lewp"
+  printf 'Warning: generated identity is missing; targeting only derived Compose project %s and skipping Lewp release.\n' "$compose_project" >&2
+fi
+
+# Compose parses the complete file even for `down`. Supply validated recorded
+# values, or harmless teardown-only ports when partial setup recorded none.
+export COMPOSE_PROJECT_NAME="$compose_project"
+export POSTGRES_PORT="$postgres_port"
+export REDIS_PORT="$redis_port"
+export LEWP_READER_CHECKOUT_PATH="$checkout"
+
+marker="$(herdr_marker_path)"
+recorded_herdr=""
+if [ -e "$marker" ] || [ -L "$marker" ]; then
+  [ -f "$marker" ] && [ ! -L "$marker" ] || fail "Herdr marker must be a regular, non-symlink file: $marker"
+  recorded_herdr="$(tr -d '\r\n' < "$marker")"
+  [[ "$recorded_herdr" =~ ^w[[:alnum:]]+$ ]] || fail "invalid Herdr workspace marker: $marker"
+  command_exists herdr || fail "Herdr marker exists but the herdr executable is unavailable; retain the marker and retry with Herdr installed"
+  herdr_preflight="$(herdr workspace list)" || fail "could not validate the recorded Herdr workspace before cleanup"
+  validate_herdr_list_json "$herdr_preflight" || fail "Herdr returned malformed workspace JSON before cleanup"
+  if jq -e --arg id "$recorded_herdr" '.result.workspaces[] | select(.workspace_id == $id)' <<<"$herdr_preflight" >/dev/null; then
+    jq -e --arg id "$recorded_herdr" --arg path "$checkout" \
+      '.result.workspaces[] | select(.workspace_id == $id and .worktree.checkout_path == $path)' \
+      <<<"$herdr_preflight" >/dev/null || fail "recorded Herdr workspace $recorded_herdr belongs to another checkout"
+  fi
+fi
+
+command_exists docker || fail "required workspace tool is missing: docker"
+docker compose version >/dev/null 2>&1 || fail "Docker Compose v2 is unavailable"
+assert_compose_owned_or_empty "$compose_project" "$checkout"
+
+printf '== Removing Compose project %s and its volumes ==\n' "$compose_project"
+compose "$compose_project" down --remove-orphans --volumes || fail "Docker cleanup failed; Lewp and Herdr state were retained for retry"
+
+if [ "$has_lewp" = true ]; then
+  command_exists lewp || fail "Docker cleanup succeeded, but Lewp is unavailable; identity was retained for retry"
+  lewp release --path "$checkout" || fail "Lewp release failed; generated identity and Herdr marker were retained for retry"
+else
+  printf 'Warning: no Lewp identity was available, so no route was released.\n' >&2
+fi
+
+if [ -n "$recorded_herdr" ]; then
+  list="$(herdr workspace list)" || fail "could not inspect Herdr after Docker and Lewp cleanup; marker retained"
+  validate_herdr_list_json "$list" || fail "Herdr returned malformed workspace JSON; marker retained"
+  if jq -e --arg id "$recorded_herdr" '.result.workspaces[] | select(.workspace_id == $id)' <<<"$list" >/dev/null; then
+    jq -e --arg id "$recorded_herdr" --arg path "$checkout" \
+      '.result.workspaces[] | select(.workspace_id == $id and .worktree.checkout_path == $path)' \
+      <<<"$list" >/dev/null || fail "recorded Herdr workspace changed ownership; marker retained"
+    herdr workspace close "$recorded_herdr" >/dev/null || fail "could not close Herdr workspace $recorded_herdr; marker retained for retry"
+  fi
+  rm -f "$marker"
+fi
+
+rm -f "$WORKSPACE_IDENTITY_FILE" "$WORKSPACE_MISE_FILE" "$WORKSPACE_LEWP_FILE" "$WORKSPACE_SEED_MARKER"
+printf 'Workspace runtime resources removed. Git checkout retained at %s\n' "$checkout"
+if [ "$checkout" != "$primary" ]; then
+  printf 'Remove it separately with:\n  git -C %q worktree remove %q\n' "$primary" "$checkout"
+fi
