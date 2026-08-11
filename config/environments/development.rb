@@ -37,8 +37,11 @@ Rails.application.configure do
   # Make template changes take effect immediately.
   config.action_mailer.perform_caching = false
 
-  # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  # Use the routed workspace host when present while preserving localhost defaults.
+  app_host = ENV.fetch("APP_HOST", "localhost")
+  app_port = Integer(ENV.fetch("PORT", "3000"), 10)
+  config.action_mailer.default_url_options = { host: app_host, port: app_port }
+  config.hosts << app_host if ENV["APP_HOST"].present?
 
   config.action_mailer.delivery_method = :letter_opener
 

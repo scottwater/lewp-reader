@@ -1,0 +1,46 @@
+name: ${COMPOSE_PROJECT_NAME:?run through bin/workspace-setup}
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:?missing POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    labels:
+      com.lewp-reader.checkout: ${LEWP_READER_CHECKOUT_PATH:?missing checkout identity}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7
+    ports:
+      - "127.0.0.1:${REDIS_PORT:?missing REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+    labels:
+      com.lewp-reader.checkout: ${LEWP_READER_CHECKOUT_PATH:?missing checkout identity}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+volumes:
+  postgres_data:
+    labels:
+      com.lewp-reader.checkout: ${LEWP_READER_CHECKOUT_PATH:?missing checkout identity}
+  redis_data:
+    labels:
+      com.lewp-reader.checkout: ${LEWP_READER_CHECKOUT_PATH:?missing checkout identity}
+
+networks:
+  default:
+    labels:
+      com.lewp-reader.checkout: ${LEWP_READER_CHECKOUT_PATH:?missing checkout identity}

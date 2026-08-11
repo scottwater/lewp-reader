@@ -38,3 +38,12 @@
 /ssr
 node_modules
 *.local
+
+# Isolated worktree runtime (generated locally)
+/.worktrees/
+/.lewp.local.toml
+/.mise.local.toml
+/.workspace-identity.json
+/tmp/workspace-seeded
+/tmp/overmind.sock
+/tmp/*.sock
