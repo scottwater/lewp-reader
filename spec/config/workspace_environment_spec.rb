@@ -71,11 +71,16 @@ RSpec.describe "workspace environment consumption at process boundaries" do
       console.log(JSON.stringify(config.server))
     JS
     stdout, stderr, status = Open3.capture3(
-      { "VITE_PORT" => "41001" },
+      { "VITE_PORT" => "41001", "APP_HOST" => "feed-fix.reader.lewp" },
       "node", "--input-type=module", "-e", script,
     )
 
     expect(status).to be_success, stderr
-    expect(JSON.parse(stdout)).to eq("port" => 41_001, "strictPort" => true)
+    expect(JSON.parse(stdout)).to eq(
+      "host" => "127.0.0.1",
+      "port" => 41_001,
+      "strictPort" => true,
+      "cors" => { "origin" => "https://feed-fix.reader.lewp" }
+    )
   end
 end
