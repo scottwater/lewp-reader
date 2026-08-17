@@ -7,7 +7,7 @@ require "spec_helper"
 RSpec.describe "workspace environment consumption at process boundaries" do
   def run_rails(code, env = {})
     Open3.capture3(
-      { "RAILS_ENV" => "development", "APP_HOST" => nil, "PORT" => nil }.merge(env),
+      { "RAILS_ENV" => "development", "DATABASE_URL" => nil, "APP_HOST" => nil, "PORT" => nil }.merge(env),
       "bin/rails", "runner", code,
     )
   end
