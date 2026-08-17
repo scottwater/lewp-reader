@@ -201,6 +201,10 @@ Automated specs use fake external tools. Before declaring a local integration op
 
 See [docs/stooges-addendum.md](docs/stooges-addendum.md) for clearly hypothetical guidance on adapting these public commands to Stooges.
 
+## Acknowledgments
+
+Lewp Reader began as a fork of the [Inertia Rails React Starter Kit](https://github.com/inertia-rails/react-starter-kit). Thanks to Svyatoslav Kryukov and the Inertia Rails contributors for the foundation they provided. See the [Inertia Rails starter kits guide](https://inertia-rails.dev/guide/starter-kits) for more information.
+
 ## License
 
-[MIT](LICENSE)
+Lewp Reader is available under the [MIT License](LICENSE). The license retains the original starter kit's copyright notice alongside Lewp Reader's.
